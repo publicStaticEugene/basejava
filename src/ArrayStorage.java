@@ -32,26 +32,14 @@ public class ArrayStorage {
     }
 
     void delete(String uuid) {
-        int index = -1;
         for (int i = 0; i < size; i++) {
             if (storage[i].toString().equals(uuid)) {
-                storage[i] = null;
-                index = i;
+                storage[i] = storage[size - 1];
+                storage[size - 1] = null;
+                size--;
+                return;
             }
         }
-        if (index == -1) {
-            System.out.println("There are no element to delete");
-            return;
-        } else if (index < storage.length - 1) {
-            for (; index < size; index++) {
-                if (index < storage.length - 1) {
-                    storage[index] = storage[index + 1];
-                } else {
-                    storage[index] = null;
-                }
-            }
-        }
-        size--;
     }
 
     /**
