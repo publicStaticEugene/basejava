@@ -4,15 +4,16 @@ package com.basejava.webapp.model;
  * com.urise.webapp.model.com.basejava.webapp.model.Resume class
  */
 public class Resume implements Comparable<Resume>{
-    // Unique identifier
 
-    private String uuid;
-    public String getUuid() {
-        return uuid;
+    // Unique identifier
+    private final String uuid;
+
+    public Resume(String uuid) {
+        this.uuid = uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public String getUuid() {
+        return uuid;
     }
 
     @Override

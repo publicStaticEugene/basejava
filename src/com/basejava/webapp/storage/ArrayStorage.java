@@ -8,17 +8,24 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage extends AbstractArrayStorage {
+
     @Override
     public void save(Resume r) {
-        if (r == null || r.getUuid() == null) {
-            System.out.println("Incorrect resume");
-        } else if (size == storage.length) {
-            System.out.println("Storage overflow");
-        } else if (getIndex(r.getUuid()) > -1) {
-            System.out.println("This resume already exists");
-        } else {
+        if (validateResume(r)) {
             storage[size] = r;
             size++;
+        }
+    }
+
+    @Override
+    public void delete(String uuid) {
+        int index = getIndex(uuid);
+        if (index > -1) {
+            storage[index] = storage[size - 1];
+            storage[size - 1] = null;
+            size--;
+        } else {
+            System.out.println("Resume " + uuid + " does not exist");
         }
     }
 

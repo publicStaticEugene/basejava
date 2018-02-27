@@ -5,7 +5,9 @@ import com.basejava.webapp.model.Resume;
 import java.util.Arrays;
 
 public abstract class AbstractArrayStorage implements Storage {
-    protected Resume[] storage = new Resume[10000];
+
+    protected static final int STORAGE_LIMIT = 10_000;
+    protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
     @Override
@@ -36,18 +38,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index > -1) {
-            storage[index] = storage[size - 1];
-            storage[size - 1] = null;
-            size--;
-        } else {
-            System.out.println("There are no resume to delete");
-        }
-    }
-
-    @Override
     public Resume[] getAll() {
         return Arrays.copyOfRange(storage, 0, size);
     }
@@ -55,6 +45,21 @@ public abstract class AbstractArrayStorage implements Storage {
     @Override
     public int size() {
         return size;
+    }
+
+    protected boolean validateResume(Resume r) {
+        if (r == null || r.getUuid() == null) {
+            System.out.println("Incorrect resume");
+            return false;
+        } else if (size == STORAGE_LIMIT) {
+            System.out.println("Storage overflow");
+            return false;
+        } else if (getIndex(r.getUuid()) > -1) {
+            System.out.println("Resume " + r.getUuid() + " is exists");
+            return false;
+        } else {
+            return true;
+        }
     }
 
     protected abstract int getIndex(String uuid);
