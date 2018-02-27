@@ -17,6 +17,23 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
+    public void save(Resume r) {
+        if (r == null || r.getUuid() == null) {
+            System.out.println("Incorrect resume");
+        } else if (size == STORAGE_LIMIT) {
+            System.out.println("Storage overflow");
+        } else {
+            int index = getIndex(r.getUuid());
+            if (index >= 0) {
+                System.out.println("Resume " + r.getUuid() + " is exists");
+            } else {
+                insertElement(r, index);
+                size++;
+            }
+        }
+    }
+
+    @Override
     public void update(Resume r) {
         int index;
         if (r == null || (index = getIndex(r.getUuid())) < 0) {
@@ -27,12 +44,24 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
+    public void delete(String uuid) {
+        int index = getIndex(uuid);
+        if (index < 0) {
+            System.out.println("Resume " + uuid + " does not exists");
+        } else {
+            fillDeletedElement(index);
+            storage[size - 1] = null;
+            size--;
+        }
+    }
+
+    @Override
     public Resume get(String uuid) {
         int index = getIndex(uuid);
-        if (index > -1) {
+        if (index >= 0) {
             return storage[index];
         } else {
-            System.out.println("This resume does not exist");
+            System.out.println("Resume " + uuid + " does not exists");
             return null;
         }
     }
@@ -47,20 +76,9 @@ public abstract class AbstractArrayStorage implements Storage {
         return size;
     }
 
-    protected boolean validateResume(Resume r) {
-        if (r == null || r.getUuid() == null) {
-            System.out.println("Incorrect resume");
-            return false;
-        } else if (size == STORAGE_LIMIT) {
-            System.out.println("Storage overflow");
-            return false;
-        } else if (getIndex(r.getUuid()) > -1) {
-            System.out.println("Resume " + r.getUuid() + " is exists");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     protected abstract int getIndex(String uuid);
+
+    protected abstract void insertElement(Resume r, int index);
+
+    protected abstract void fillDeletedElement(int index);
 }
