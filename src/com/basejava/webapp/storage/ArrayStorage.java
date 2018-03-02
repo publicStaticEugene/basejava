@@ -13,12 +13,12 @@ public class ArrayStorage extends AbstractArrayStorage {
             if (storage[i].getUuid().equals(uuid))
                 return i;
         }
-        return -1;
+        return -(size) - 1;
     }
 
     @Override
     protected void insertElement(Resume r, int index) {
-        storage[index] = r;
+        storage[- index - 1] = r;
     }
 
     @Override
