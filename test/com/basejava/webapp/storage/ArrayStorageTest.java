@@ -2,8 +2,6 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-import static org.junit.Assert.*;
-
 public class ArrayStorageTest extends AbstractArrayStorageTest {
 
     public ArrayStorageTest() {
@@ -11,5 +9,7 @@ public class ArrayStorageTest extends AbstractArrayStorageTest {
     }
 
     @Override
-    protected void sortArray(Resume[] r) { /* NOP */ }
+    protected void sortArray(Resume[] r) {
+
+    }
 }
