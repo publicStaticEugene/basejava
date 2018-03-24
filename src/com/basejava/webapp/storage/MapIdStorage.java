@@ -24,7 +24,7 @@ public class MapIdStorage extends AbstractMapStorage<Integer> {
 
     @Override
     protected void doUpdate(Resume r, Object searchKey) {
-        map.compute((Integer) searchKey, (k, v) -> r);
+        map.put((Integer) searchKey, r);
     }
 
     @Override
