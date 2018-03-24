@@ -5,7 +5,7 @@ import com.basejava.webapp.model.Resume;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MapIdStorage extends AbstractMapStorage<Integer> {
+public class MapIdStorage extends AbstractMapStorage<Integer, Integer> {
     private AtomicInteger counter = new AtomicInteger(0);
 
     @Override
@@ -18,23 +18,23 @@ public class MapIdStorage extends AbstractMapStorage<Integer> {
     }
 
     @Override
-    protected void doSave(Resume r, Object searchKey) {
+    protected void doSave(Resume r, Integer id) {
         map.put(counter.incrementAndGet(), r);
     }
 
     @Override
-    protected void doUpdate(Resume r, Object searchKey) {
-        map.put((Integer) searchKey, r);
+    protected void doUpdate(Resume r, Integer id) {
+        map.put(id, r);
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
-        map.remove((Integer) searchKey);
+    protected void doDelete(Integer id) {
+        map.remove(id);
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
-        return map.get((Integer) searchKey);
+    protected Resume doGet(Integer id) {
+        return map.get(id);
     }
 
 }

@@ -4,11 +4,11 @@ import com.basejava.webapp.model.Resume;
 
 import java.util.*;
 
-public abstract class AbstractMapStorage<K> extends AbstractStorage {
+public abstract class AbstractMapStorage<K, S> extends AbstractStorage<S> {
     protected Map<K, Resume> map = new HashMap<>();
 
     @Override
-    protected boolean isExist(Object searchKey) {
+    protected boolean isExist(S searchKey) {
         return searchKey != null;
     }
 

@@ -2,7 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-public class MapUuidStorage extends AbstractMapStorage<String> {
+public class MapUuidStorage extends AbstractMapStorage<String, String> {
 
     @Override
     protected String getSearchKey(String uuid) {
@@ -10,22 +10,22 @@ public class MapUuidStorage extends AbstractMapStorage<String> {
     }
 
     @Override
-    protected void doSave(Resume r, Object searchKey) {
+    protected void doSave(Resume r, String uuid) {
         map.put(r.getUuid(), r);
     }
 
     @Override
-    protected void doUpdate(Resume r, Object searchKey) {
-        map.put((String) searchKey, r);
+    protected void doUpdate(Resume r, String uuid) {
+        map.put(uuid, r);
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
-        map.remove((String) searchKey);
+    protected void doDelete(String uuid) {
+        map.remove(uuid);
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
-        return map.get((String) searchKey);
+    protected Resume doGet(String uuid) {
+        return map.get(uuid);
     }
 }
