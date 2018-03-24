@@ -3,9 +3,7 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.exception.StorageException;
 import com.basejava.webapp.model.Resume;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
@@ -48,6 +46,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     public List<Resume> getAllSorted() {
         return Arrays.stream(storage)
+                .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(Resume::getFullName))
                 .collect(Collectors.toList());
     }

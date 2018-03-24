@@ -6,6 +6,10 @@ import com.basejava.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public abstract class AbstractStorageTest {
@@ -18,8 +22,8 @@ public abstract class AbstractStorageTest {
     };
     private final String NOT_EXISTS_UUID = "uuid12";
 
-    private final Resume NOT_EXISTS_RESUME = new Resume(NOT_EXISTS_UUID);
-    private final Resume EXISTS_RESUME = new Resume(EXISTS_UUIDs[5]);
+    private final Resume NOT_EXISTS_RESUME = new Resume(NOT_EXISTS_UUID, "fullName" + NOT_EXISTS_UUID);
+    private final Resume EXISTS_RESUME = new Resume(EXISTS_UUIDs[5], "fullName" + EXISTS_UUIDs[5]);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -79,10 +83,13 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        Resume[] resumes = storage.getAll();
-        Resume[] expectedResumes = getExpectedArray();
-        assertArrayEquals(expectedResumes, resumes);
+    public void getAllSorted() {
+        List<Resume> actual = storage.getAllSorted();
+        List<Resume> expected = getExpectedList();
+        assertEquals(actual.size(), expected.size());
+        for (int i = 0; i < actual.size(); i++) {
+            assertEquals(actual.get(i), expected.get(i));
+        }
     }
 
     @Test
@@ -99,7 +106,7 @@ public abstract class AbstractStorageTest {
 
     private void init() {
         for (String uuid : EXISTS_UUIDs) {
-            storage.save(new Resume(uuid));
+            storage.save(new Resume(uuid, "fullName" + uuid));
         }
     }
 
@@ -107,14 +114,12 @@ public abstract class AbstractStorageTest {
         assertEquals(size, storage.size());
     }
 
-    private Resume[] getExpectedArray() {
-        Resume[] result = new Resume[EXISTS_UUIDs.length];
+    private List<Resume> getExpectedList() {
+        List<Resume> result = new ArrayList<>();
         for (int i = 0; i < EXISTS_UUIDs.length; i++) {
-            result[i] = new Resume(EXISTS_UUIDs[i]);
+            result.add(new Resume(EXISTS_UUIDs[i], "fullName" + EXISTS_UUIDs[i]));
         }
-        sortArray(result);
+        result.sort(Comparator.comparing(Resume::getFullName));
         return result;
     }
-
-    protected abstract void sortArray(Resume[] r);
 }
