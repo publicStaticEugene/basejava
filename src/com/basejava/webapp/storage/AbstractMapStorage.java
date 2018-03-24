@@ -2,11 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public abstract class AbstractMapStorage<K> extends AbstractStorage {
     protected Map<K, Resume> map = new HashMap<>();
@@ -22,10 +18,8 @@ public abstract class AbstractMapStorage<K> extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        return map.values().stream()
-                .sorted(Comparator.comparing(Resume::getFullName))
-                .collect(Collectors.toList());
+    protected List<Resume> doCopyList() {
+        return new ArrayList<>(map.values());
     }
 
     @Override
