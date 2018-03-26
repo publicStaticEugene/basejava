@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private final File directory;
@@ -22,6 +23,10 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         this.directory = directory;
     }
+
+    protected abstract void doWrite(Resume r, File file);
+
+    protected abstract Resume doRead(File file);
 
     @Override
     protected boolean isExist(File file) {
@@ -43,11 +48,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
     }
 
-    protected abstract void doWrite(Resume r, File file);
-
     @Override
     protected void doUpdate(Resume r, File file) {
-
+        doWrite(r, file);
     }
 
     @Override
@@ -57,12 +60,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        return null;
+        return doRead(file);
     }
 
     @Override
     protected List<Resume> doCopyList() {
-        return null;
+        return Arrays.stream(directory.listFiles())
+                .map(this::doRead)
+                .collect(Collectors.toList());
     }
 
     @Override
