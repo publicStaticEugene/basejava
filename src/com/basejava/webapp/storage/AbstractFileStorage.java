@@ -4,20 +4,23 @@ import com.basejava.webapp.exception.StorageException;
 import com.basejava.webapp.model.Resume;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class AbstractFileStorage extends AbstractStorage<File> {
-    private final File storage;
+public abstract class AbstractFileStorage extends AbstractStorage<File> {
+    private final File directory;
     private int size;
 
-    public AbstractFileStorage(File storage) {
-        Objects.requireNonNull(storage);
-        if (!storage.isDirectory()) {
-            throw new StorageException("Storage is not a directory", storage.getName());
+    public AbstractFileStorage(File directory) {
+        Objects.requireNonNull(directory);
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not a directory");
+        } else if (!directory.canRead() || !directory.canWrite()) {
+            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writeable");
         }
-        this.storage = storage;
+        this.directory = directory;
     }
 
     @Override
@@ -27,13 +30,20 @@ public class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected File getSearchKey(String uuid) {
-        return new File(uuid);
+        return new File(directory, uuid);
     }
 
     @Override
     protected void doSave(Resume r, File file) {
-
+        try {
+            file.createNewFile();
+            doWrite(r, file);
+        } catch (IOException e) {
+            throw new StorageException("IO Error", file.getName(), e);
+        }
     }
+
+    protected abstract void doWrite(Resume r, File file);
 
     @Override
     protected void doUpdate(Resume r, File file) {
@@ -57,7 +67,7 @@ public class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        Arrays.stream(storage.listFiles())
+        Arrays.stream(directory.listFiles())
                 .forEach(File::delete);
     }
 
