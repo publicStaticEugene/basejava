@@ -19,8 +19,8 @@ public class MainFile {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException(dir + "is not directory");
         }
-        File[] list = dir.listFiles();
-        for (File entity : list) {
+        File[] files = dir.listFiles();
+        for (File entity : files) {
             if (entity.isDirectory()) {
                 printFiles(entity);
             }
