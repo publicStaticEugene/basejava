@@ -1,5 +1,6 @@
 package com.basejava.webapp.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import java.util.UUID;
 /**
  * com.urise.webapp.model.com.basejava.webapp.model.Resume class
  */
-public class Resume implements Comparable<Resume>{
+public class Resume implements Comparable<Resume>, Serializable {
 
     // Unique identifier
     private final String uuid;
