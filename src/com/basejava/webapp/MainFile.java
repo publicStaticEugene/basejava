@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Objects;
 
 public class MainFile {
+    private static StringBuilder indent = new StringBuilder();
+    private static final String tab = "     ";
+
     public static void main(String[] args) {
         File dir = new File(".");
 //        System.out.println(String.format("Absolute path  === %s", file.getAbsolutePath()));
@@ -22,9 +25,13 @@ public class MainFile {
         File[] files = dir.listFiles();
         for (File entity : files) {
             if (entity.isDirectory()) {
+                System.out.println(indent + "-->:" + entity.getName());
+                indent.append(tab);
                 printFiles(entity);
+            } else {
+                System.out.println(indent + "--:" + entity.getName());
             }
-            System.out.println(entity);
         }
+        MainFile.indent.delete(0, tab.length());
     }
 }
