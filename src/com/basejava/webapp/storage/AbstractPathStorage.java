@@ -10,100 +10,98 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     private final Path directory;
 
-    public AbstractPathStorage(Path directory) {
-        Objects.requireNonNull(directory);
+    public AbstractPathStorage(String dir) {
+        directory = Paths.get(dir);
+        Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException(directory.toString() + " is not a directory");
         } else if (!Files.isReadable(directory) || !Files.isWritable(directory)) {
-            throw new IllegalArgumentException(directory.toString() + " is not readable/writeable");
+            throw new IllegalArgumentException(directory.toString() + " is not readable/writable");
         }
-        this.directory = directory;
     }
 
-    protected abstract void doWrite(Resume r, OutputStream out);
+    protected abstract void doWrite(Resume r, OutputStream out) throws IOException;
 
-    protected abstract Resume doRead(InputStream in);
+    protected abstract Resume doRead(InputStream in) throws IOException;
 
     @Override
     protected boolean isExist(Path path) {
-        return Files.exists(path);
+        return Files.isRegularFile(path);
     }
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return Paths.get(uuid);
+        return directory.resolve(uuid);
     }
 
     @Override
     protected void doSave(Resume r, Path path) {
         try {
             Files.createFile(path);
-            doUpdate(r, path);
         } catch (IOException e) {
-            throw new StorageException("File create error", path.toString(), e);
+            throw new StorageException("Path create error", getFileName(path), e);
         }
+        doUpdate(r, path);
     }
 
     @Override
     protected void doUpdate(Resume r, Path path) {
         try {
-            doWrite(r, new ObjectOutputStream(new FileOutputStream(path.toFile())));
+            doWrite(r, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
-            throw new StorageException("Write error", path.toString(), e);
+            throw new StorageException("Path write error", getFileName(path), e);
         }
     }
 
     @Override
     protected void doDelete(Path path) {
-        File file = path.toFile();
-        file.delete();
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new StorageException("Path delete error", getFileName(path), e);
+        }
     }
 
     @Override
     protected Resume doGet(Path path) {
         try {
-            return doRead(new ObjectInputStream(new FileInputStream(path.toFile())));
+            return doRead(new BufferedInputStream(Files.newInputStream(path)));
         } catch (IOException e) {
-            throw new StorageException("Read error", path.toString(), e);
+            throw new StorageException("Path read error", getFileName(path), e);
         }
     }
 
     @Override
     protected List<Resume> doCopyList() {
-        try {
-            return Files
-                    .list(directory)
-                    .map(this::doGet)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new StorageException(directory.toString() + "is not a directory", directory.toString(), e);
-        }
+        return getFileList()
+                .map(this::doGet)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        try {
-            Files
-                    .list(directory)
-                    .forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException(directory.toString() + "is not a directory", directory.toString(), e);
-        }
+        getFileList().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        try {
-            return (int) Files
-                    .list(directory)
-                    .count();
-        } catch (IOException e) {
-            throw new StorageException(directory.toString() + "is not a directory", directory.toString(), e);
+        return (int) getFileList().count();
+    }
 
+    private Stream<Path> getFileList() {
+        try {
+            return Files.list(directory);
+        } catch (IOException e) {
+            throw new StorageException("Direactory read error", getFileName(directory), e);
         }
+    }
+
+    private String getFileName(Path path) {
+        return path.getFileName().toString();
     }
 }
