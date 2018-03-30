@@ -2,6 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exception.StorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.storage.serializer.SerializerStrategy;
 
 import java.io.*;
 import java.util.Arrays;
@@ -9,22 +10,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private final File directory;
+    private SerializerStrategy serializerStrategy;
 
-    public AbstractFileStorage(File directory) {
-        Objects.requireNonNull(directory);
-        if (!directory.isDirectory()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not a directory");
-        } else if (!directory.canRead() || !directory.canWrite()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writeable");
+    public FileStorage(File dir, SerializerStrategy serializerStrategy) {
+        Objects.requireNonNull(dir, "directory must not be null");
+        Objects.requireNonNull(serializerStrategy, "strategy must not be null");
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException(dir.getAbsolutePath() + " is not a dir");
+        } else if (!dir.canRead() || !dir.canWrite()) {
+            throw new IllegalArgumentException(dir.getAbsolutePath() + " is not readable/writable");
         }
-        this.directory = directory;
+        this.directory = dir;
+        this.serializerStrategy = serializerStrategy;
     }
-
-    protected abstract void doWrite(Resume r, OutputStream out) throws IOException;
-
-    protected abstract Resume doRead(InputStream in) throws IOException;
 
     @Override
     protected boolean isExist(File file) {
@@ -49,9 +49,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doUpdate(Resume r, File file) {
         try {
-            doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
+            serializerStrategy.write(r, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
-            throw new StorageException("Write error", file.getAbsolutePath(), e);
+            throw new StorageException("File write error", file.getAbsolutePath(), e);
         }
     }
 
@@ -64,9 +64,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected Resume doGet(File file) {
         try {
-            return doRead(new BufferedInputStream(new FileInputStream(file)));
+            return serializerStrategy.read(new BufferedInputStream(new FileInputStream(file)));
         } catch (IOException e) {
-            throw new StorageException("Read error", file.getAbsolutePath(), e);
+            throw new StorageException("File read error", file.getAbsolutePath(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected List<Resume> doCopyList() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("Directory read error", directory.getAbsolutePath());
+            throw new StorageException("Directory file read error", directory.getAbsolutePath());
         }
         return Arrays.stream(files)
                 .map(this::doGet)
@@ -91,7 +91,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public int size() {
         String[] list = directory.list();
         if (list == null) {
-            throw new StorageException("Directory read error", directory.getName());
+            throw new StorageException("Directory file read error", directory.getName());
         }
         return list.length;
     }
