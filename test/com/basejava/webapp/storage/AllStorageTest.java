@@ -1,9 +1,6 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.storage.serializer.ObjectStreamFileStorageTest;
-import com.basejava.webapp.storage.serializer.ObjectStreamPathStorageTest;
-import com.basejava.webapp.storage.serializer.XmlStreamFileStorageTest;
-import com.basejava.webapp.storage.serializer.XmlStreamPathStorageTest;
+import com.basejava.webapp.storage.serializer.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -18,7 +15,9 @@ import org.junit.runners.Suite;
         ObjectStreamFileStorageTest.class,
         ObjectStreamPathStorageTest.class,
         XmlStreamFileStorageTest.class,
-        XmlStreamPathStorageTest.class
+        XmlStreamPathStorageTest.class,
+        JsonStreamFileStorageTest.class,
+        JsonStreamPathStorageTest.class
 })
 public class AllStorageTest {
 }
