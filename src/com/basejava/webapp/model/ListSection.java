@@ -32,7 +32,6 @@ public class ListSection extends Section {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(items);
     }
 
