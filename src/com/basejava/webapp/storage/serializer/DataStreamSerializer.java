@@ -8,6 +8,8 @@ import com.basejava.webapp.model.SectionType;
 import java.io.*;
 import java.util.Map;
 
+import static com.basejava.webapp.util.DataSerializerUtil.DataStream.*;
+
 public class DataStreamSerializer implements SerializerStrategy {
 
     @Override
@@ -24,7 +26,7 @@ public class DataStreamSerializer implements SerializerStrategy {
             dos.writeInt(r.getSections().size());
             for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
                 dos.writeUTF(entry.getKey().toString());
-
+                writeSection(entry.getValue(), dos);
             }
         }
     }
@@ -39,7 +41,11 @@ public class DataStreamSerializer implements SerializerStrategy {
             }
 
             count = dis.readInt();
-            return null;
+            for (int i = 0; i < count; i++) {
+                resume.addSection(SectionType.valueOf(dis.readUTF()), readSection(dis));
+            }
+
+            return resume;
         }
     }
 }
