@@ -12,9 +12,16 @@ class LinkDataStream {
         dos.writeUTF(link.getName());
         if (link.getUrl() != null)
             dos.writeUTF(link.getUrl());
+        else
+            dos.writeUTF("null");
     }
 
     static Link readLink(DataInputStream dis) throws IOException {
-        return new Link(dis.readUTF(), dis.readUTF());
+        String name = dis.readUTF();
+        String url = dis.readUTF();
+        return new Link(
+                name,
+                url.equals("null") ? null : url
+        );
     }
 }

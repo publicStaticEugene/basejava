@@ -5,28 +5,32 @@ import com.basejava.webapp.model.Organization;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.time.Month;
+import java.time.LocalDate;
 
 class PositionDataStream {
 
     static void writePosition(Organization.Position position, DataOutputStream dos) throws IOException {
-        dos.writeInt(position.getStartDate().getYear());
-        dos.writeInt(position.getStartDate().getMonth().getValue());
-        dos.writeInt(position.getEndDate().getYear());
-        dos.writeInt(position.getEndDate().getMonth().getValue());
+        dos.writeUTF(position.getStartDate().toString());
+        dos.writeUTF(position.getEndDate().toString());
         dos.writeUTF(position.getTitle());
         if (position.getDescription() != null)
             dos.writeUTF(position.getDescription());
+        else
+            dos.writeUTF("null");
     }
 
     static Organization.Position readPosition(DataInputStream dis) throws IOException {
+        LocalDate startDate = LocalDate.parse(dis.readUTF());
+        LocalDate endDate = LocalDate.parse(dis.readUTF());
+        String title = dis.readUTF();
+        String description = dis.readUTF();
         return new Organization.Position(
-                dis.readInt(),
-                Month.of(dis.readInt()),
-                dis.readInt(),
-                Month.of(dis.readInt()),
-                dis.readUTF(),
-                dis.readUTF()
+                startDate.getYear(),
+                startDate.getMonth(),
+                endDate.getYear(),
+                endDate.getMonth(),
+                title,
+                description.equals("null") ? null : description
         );
     }
 }

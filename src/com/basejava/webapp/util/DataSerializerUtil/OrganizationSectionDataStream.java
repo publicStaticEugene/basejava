@@ -15,6 +15,7 @@ import static com.basejava.webapp.util.DataSerializerUtil.OrganizationDataStream
 class OrganizationSectionDataStream {
 
     static void writeOrganizationSection(OrganizationSection organizationSection, DataOutputStream dos) throws IOException {
+        dos.writeUTF(organizationSection.getClass().getSimpleName());
         dos.writeInt(organizationSection.getOrganizations().size());
         for (Organization organization : organizationSection.getOrganizations())
             writeOrganization(organization, dos);

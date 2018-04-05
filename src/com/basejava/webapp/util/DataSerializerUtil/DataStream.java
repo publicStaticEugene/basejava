@@ -22,6 +22,11 @@ public class DataStream {
     }
 
     public static Section readSection(DataInputStream dis) throws IOException {
-        return null;
+        String sectionClass = dis.readUTF();
+        Section section = null;
+        if (sectionClass.equals(TextSection.class.getSimpleName())) section = readTextSection(dis);
+        else if (sectionClass.equals(ListSection.class.getSimpleName())) section = readListSection(dis);
+        else if (sectionClass.equals(OrganizationSection.class.getSimpleName())) section =readOrganizationSection(dis);
+        return section;
     }
 }
