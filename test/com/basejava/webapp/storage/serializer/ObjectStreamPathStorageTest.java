@@ -6,6 +6,6 @@ import com.basejava.webapp.storage.PathStorage;
 public class ObjectStreamPathStorageTest extends AbstractStorageTest {
 
     public ObjectStreamPathStorageTest() {
-        super(new PathStorage(STORAGE_PATH, new ObjectStreamSerializer()));
+        super(new PathStorage(STORAGE_DIR.getAbsolutePath(), new ObjectStreamSerializer()));
     }
 }
