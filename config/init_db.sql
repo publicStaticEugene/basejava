@@ -10,7 +10,7 @@ CREATE TABLE contact
 (
   id          SERIAL   NOT NULL,
   resume_uuid CHAR(36) NOT NULL
-    CONSTRAINT contact_resume_uuid__fk
+    CONSTRAINT contact_resume_uuid_fk
     REFERENCES resume
     ON DELETE CASCADE,
   type        TEXT     NOT NULL,
