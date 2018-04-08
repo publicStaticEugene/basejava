@@ -27,7 +27,7 @@ public abstract class AbstractStorage<S> implements Storage {
 
     @Override
     public void save(Resume r) {
-        LOG.info("Save " + r);
+        LOG.info("save " + r);
         S searchKey = getNotExistSearchKey(r.getUuid());
         doSave(r, searchKey);
     }
