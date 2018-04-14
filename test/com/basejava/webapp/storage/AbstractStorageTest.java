@@ -8,20 +8,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public abstract class AbstractStorageTest {
-    protected static final File STORAGE_DIR = Config.getInstance().getStorage();
+    protected static final File STORAGE_DIR = Config.getInstance().getStorageDir();
     protected Storage storage;
 
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_4 = "uuid4";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String UUID_4 = UUID.randomUUID().toString();
 
     private static final Resume R1;
     private static final Resume R2;
@@ -34,7 +34,7 @@ public abstract class AbstractStorageTest {
         R3 = new Resume(UUID_3, "Name3");
         R4 = new Resume(UUID_4, "Name4");
 
-//        R1.addContact(ContactType.MAIL, "mail1@ya.ru");
+        R1.addContact(ContactType.MAIL, "mail1@ya.ru");
 //        R1.addContact(ContactType.PHONE, "11111");
 //        R1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
 //        R1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
