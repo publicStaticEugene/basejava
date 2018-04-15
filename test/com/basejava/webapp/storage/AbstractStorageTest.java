@@ -83,6 +83,9 @@ public abstract class AbstractStorageTest {
     @Test
     public void update() throws Exception {
         Resume newResume = new Resume(UUID_1, "New Name");
+        newResume.addContact(ContactType.PHONE, "22222");
+        newResume.addContact(ContactType.SKYPE, "skype");
+        newResume.addContact(ContactType.GITHUB, "git");
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
     }
@@ -111,6 +114,7 @@ public abstract class AbstractStorageTest {
         storage.save(R1);
     }
 
+    @Test
     public void delete() throws Exception {
         storage.delete(UUID_1);
         assertSize(2);
