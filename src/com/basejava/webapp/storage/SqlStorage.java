@@ -1,6 +1,7 @@
 package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exception.NotExistStorageException;
+import com.basejava.webapp.model.ContactType;
 import com.basejava.webapp.model.Resume;
 import com.basejava.webapp.sql.SqlHelper;
 
@@ -45,12 +46,25 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         LOG.info("get " + uuid);
-        return helper.executeQuery("SELECT * FROM resume WHERE uuid = ?", pstmt -> {
-            pstmt.setString(1, uuid);
-            ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) throw new NotExistStorageException(uuid);
-            return new Resume(uuid, rs.getString("full_name"));
-        });
+        return helper.executeQuery("" +
+                        "SELECT * FROM resume r " +
+                        "  LEFT JOIN contact c " +
+                        "    ON r.uuid = c.resume_uuid " +
+                        " WHERE r.uuid = ?",
+                pstmt -> {
+                    pstmt.setString(1, uuid);
+                    ResultSet rs = pstmt.executeQuery();
+                    if (!rs.next()) throw new NotExistStorageException(uuid);
+                    Resume resume = new Resume(uuid, rs.getString("full_name"));
+                    String value;
+                    ContactType type;
+                    while(rs.next()) {
+                        value = rs.getString("value");
+                        type = ContactType.valueOf(rs.getString("type"));
+                        resume.addContact(type, value);
+                    }
+                    return resume;
+                });
     }
 
     @Override
@@ -90,11 +104,11 @@ public class SqlStorage implements Storage {
         });
     }
 
-    private void executeQueryForContacts(Resume r, String url) {
-        r.getContacts().forEach((key, value) -> helper.executeQuery(url, pstmt -> {
-            pstmt.setString(1, r.getUuid());
-            pstmt.setString(2, key.name());
-            pstmt.setString(3, value);
+    private void executeQueryForContacts(Resume r, String sql) {
+        r.getContacts().forEach((key, value) -> helper.executeQuery(sql, pstmt -> {
+            pstmt.setString(1, key.name());
+            pstmt.setString(2, value);
+            pstmt.setString(3, r.getUuid());
             return null;
         }));
     }

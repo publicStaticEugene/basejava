@@ -1,5 +1,7 @@
 package com.basejava.webapp.sql;
 
+import com.basejava.webapp.exception.StorageException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,6 +24,22 @@ public class SqlHelper {
             return executor.execute(pstmt);
         } catch (SQLException e) {
             throw ExceptionUtil.convertException(e);
+        }
+    }
+
+    public <T> T executeTransaction(SqlTransaction<T> executor) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                T res = executor.execute(conn);
+                conn.commit();
+                return res;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw ExceptionUtil.convertException(e);
+            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
         }
     }
 }
