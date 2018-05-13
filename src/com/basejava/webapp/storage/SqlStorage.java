@@ -1,8 +1,7 @@
 package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exception.NotExistStorageException;
-import com.basejava.webapp.model.ContactType;
-import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.model.*;
 import com.basejava.webapp.sql.SqlHelper;
 
 import java.sql.*;
@@ -28,6 +27,7 @@ public class SqlStorage implements Storage {
                 pstmt.executeUpdate();
             }
             insertContact(conn, r);
+            insertSection(conn, r);
             return null;
         });
     }
@@ -43,6 +43,8 @@ public class SqlStorage implements Storage {
             }
             deleteContact(conn, r);
             insertContact(conn, r);
+            deleteSection(conn, r);
+            insertSection(conn, r);
             return null;
         });
     }
@@ -139,6 +141,62 @@ public class SqlStorage implements Storage {
                 pstmt.addBatch();
             }
             pstmt.executeBatch();
+        }
+    }
+
+    private void deleteSection(Connection conn, Resume r) throws SQLException {
+        deleteTextSection(conn, r.getUuid());
+        deleteListSectiob(conn, r.getUuid());
+    }
+
+    private void deleteTextSection(Connection conn, String uuid) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM text_section WHERE resume_uuid = ?")) {
+            pstmt.setString(1, uuid);
+            pstmt.execute();
+        }
+    }
+
+    private void deleteListSectiob(Connection conn, String uuid) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM list_section WHERE resume_uuid = ?")) {
+            pstmt.setString(1, uuid);
+            pstmt.execute();
+        }
+    }
+
+    private void insertSection(Connection conn, Resume r) throws SQLException {
+        for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
+            switch (entry.getKey()) {
+                case PERSONAL:
+                case OBJECTIVE:
+                    insertTextSection(conn, r.getUuid(), entry);
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    insertListSection(conn, r.getUuid(), entry);
+                    break;
+            }
+        }
+    }
+
+    private void insertTextSection(Connection conn, String uuid, Map.Entry<SectionType, Section> entry) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO text_section (type, content, resume_uuid) VALUES (?, ?, ?)")) {
+            pstmt.setString(1, entry.getKey().name());
+            pstmt.setString(2, ((TextSection) entry.getValue()).getContent());
+            pstmt.setString(3, uuid);
+            pstmt.executeUpdate();
+        }
+    }
+
+    private void insertListSection(Connection conn, String uuid, Map.Entry<SectionType, Section> entry) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO list_section (type, items, resume_uuid) VALUES (?, ?, ?)")) {
+            StringBuilder items = new StringBuilder();
+            for (String item : ((ListSection) entry.getValue()).getItems()) {
+                items.append(item).append("\n");
+            }
+            pstmt.setString(1, entry.getKey().name());
+            pstmt.setString(2, items.toString());
+            pstmt.setString(3, uuid);
+            pstmt.executeUpdate();
         }
     }
 
