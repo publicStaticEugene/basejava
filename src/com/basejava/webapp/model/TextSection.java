@@ -9,7 +9,7 @@ public class TextSection extends Section {
 
     public TextSection() {}
 
-    public TextSection(String content) {
+    public TextSection(final String content) {
         this.content = content;
     }
 
@@ -19,10 +19,10 @@ public class TextSection extends Section {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TextSection that = (TextSection) o;
+        final TextSection that = (TextSection) o;
         return Objects.equals(content, that.content);
     }
 

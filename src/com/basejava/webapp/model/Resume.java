@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * com.urise.webapp.model.com.basejava.webapp.model.Resume class
- */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Comparable<Resume>, Serializable {
@@ -19,16 +16,16 @@ public class Resume implements Comparable<Resume>, Serializable {
     // Unique identifier
     private String uuid;
     private String fullName;
-    private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
-    private Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public Resume() {}
 
-    public Resume(String fullName) {
+    public Resume(final String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
 
-    public Resume(String uuid, String fullName) {
+    public Resume(final String uuid, final String fullName) {
         Objects.requireNonNull(uuid, "uuid should not be null");
         Objects.requireNonNull(fullName, "fullName should not be null");
         this.uuid = uuid;
@@ -51,27 +48,27 @@ public class Resume implements Comparable<Resume>, Serializable {
         return sections;
     }
 
-    public String getContact(ContactType contactType) {
+    public String getContact(final ContactType contactType) {
         return contacts.get(contactType);
     }
 
-    public Section getSection(SectionType sectionType) {
+    public Section getSection(final SectionType sectionType) {
         return sections.get(sectionType);
     }
 
-    public void addContact(ContactType contactType, String contact) {
+    public void addContact(final ContactType contactType, final String contact) {
         contacts.put(contactType, contact);
     }
 
-    public void addSection(SectionType sectionType, Section section) {
+    public void addSection(final SectionType sectionType, final Section section) {
         sections.put(sectionType, section);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Resume resume = (Resume) o;
+        final Resume resume = (Resume) o;
         return Objects.equals(uuid, resume.uuid) &&
                 Objects.equals(fullName, resume.fullName) &&
                 Objects.equals(contacts, resume.contacts) &&
@@ -89,8 +86,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     }
 
     @Override
-    public int compareTo(Resume r) {
-        int cmp = this.fullName.compareTo(r.fullName);
+    public int compareTo(final Resume r) {
+        final int cmp = this.fullName.compareTo(r.fullName);
         return cmp != 0 ? cmp : this.uuid.compareTo(r.uuid);
     }
 }

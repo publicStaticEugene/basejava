@@ -7,13 +7,14 @@ import java.util.Objects;
 public class ListSection extends Section {
     private List<String> items;
 
-    public ListSection() {}
+    public ListSection() {
+    }
 
-    public ListSection(String... items) {
+    public ListSection(final String... items) {
         this(Arrays.asList(items));
     }
 
-    public ListSection(List<String> items) {
+    public ListSection(final List<String> items) {
         Objects.requireNonNull(items, "items must not be null");
         this.items = items;
     }
@@ -23,10 +24,10 @@ public class ListSection extends Section {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ListSection that = (ListSection) o;
+        final ListSection that = (ListSection) o;
         return Objects.equals(items, that.items);
     }
 
