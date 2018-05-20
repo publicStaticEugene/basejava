@@ -14,14 +14,14 @@ public class SqlHelper {
         this.connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    public void executeQuery(String url) {
-        executeQuery(url, PreparedStatement::execute);
+    public void executeQuery(String sql) {
+        executeQuery(sql, PreparedStatement::execute);
     }
 
     public <T> T executeQuery(String sql, QueryExecutor<T> executor) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            return executor.execute(pstmt);
+             PreparedStatement pstat = conn.prepareStatement(sql)) {
+            return executor.execute(pstat);
         } catch (SQLException e) {
             throw ExceptionUtil.convertException(e);
         }
@@ -40,6 +40,14 @@ public class SqlHelper {
             }
         } catch (SQLException e) {
             throw new StorageException(e);
+        }
+    }
+
+    public Connection getConnection() {
+        try {
+            return connectionFactory.getConnection();
+        } catch (SQLException e) {
+            throw ExceptionUtil.convertException(e);
         }
     }
 }

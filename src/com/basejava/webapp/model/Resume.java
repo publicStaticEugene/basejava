@@ -64,6 +64,18 @@ public class Resume implements Comparable<Resume>, Serializable {
         sections.put(sectionType, section);
     }
 
+    public void addContacts(final Map<ContactType, String> contacts) {
+        for (final Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            this.contacts.put(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void addSections(final Map<SectionType, Section> sections) {
+        for (final Map.Entry<SectionType, Section> entry : sections.entrySet()) {
+            this.sections.put(entry.getKey(), entry.getValue());
+        }
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
